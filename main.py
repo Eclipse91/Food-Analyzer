@@ -480,6 +480,47 @@ def get_food_list(API_KEY, page_number, page_size):
     
     return []
 
+def search_all_foods_usda(query, API_KEY):
+    '''
+    Searches for a specific food item in the USDA FoodData Central database.
+    This function sends a GET request to the USDA FoodData Central API
+    using the /foods/search endpoint. It retrieves detailed nutritional 
+    information for all food items that match the given query.
+    '''
+    search_url = 'https://api.nal.usda.gov/fdc/v1/foods/search'
+    all_foods = []
+    page_number = 1
+    page_size = 50  # Adjust this number as needed
+
+    while True:
+        params = {
+            'api_key': API_KEY,
+            'query': query,
+            'dataType': 'Foundation, SR Legacy',
+            'pageSize': page_size,
+            'pageNumber': page_number
+        }
+        
+        response = requests.get(search_url, params=params)
+        
+        if response.status_code == 200:
+            food_data = response.json()
+            if food_data['totalHits'] > 0:
+                all_foods.extend(food_data['foods'])
+                if len(food_data['foods']) < page_size:
+                    break  # Exit loop if fewer results than page size
+            else:
+                break  # No more results
+        else:
+            return f"Error: {response.status_code}"
+        
+        page_number += 1  # Move to the next page
+    
+    if all_foods:
+        return all_foods
+    else:
+        return 'No results found.'
+
 def save_data(food_data, food_item):
     food_data = reduce_json(food_data)
     food_data = json_to_list_of_lists(food_data)
@@ -518,6 +559,24 @@ def main():
     # Read eated foods or the corrected Version or None of them
     if CORRECTED_FOODS == '':
         foods = read_file('foods.txt')
+
+        # Create corrected foods from foods.txt
+        corrected_foods = []
+        for food in foods:
+            results = search_all_foods_usda(food, API_KEY)
+            if isinstance(results, list):
+                try:
+                    for result in results:
+                        corrected_foods.append(result['description'])
+                except:
+                    logging.error(f'Issues adding: {result}')
+            else:
+                logging.error(f'Food not found: {food}')
+                logging.error(f'Food not found: {results}')
+
+        with open('example_corrected_foods.txt', 'a') as file:
+            for food in corrected_foods:
+                file.write(f"{food}\n")
     else:
         foods = read_file(CORRECTED_FOODS)
 
@@ -527,6 +586,8 @@ def main():
         save_data(food_data, food)
 
     logging.info('Program ended successfully')
+
+
 
     # if isinstance(food_data, dict):  # Ensure the response is a dictionary
     #     write_to_json(food_data, './jsons/' + food_item + '.json')
@@ -545,5 +606,20 @@ def main():
     # for i, food in enumerate(food_list):
     #     print(f"{i}. {food}")
 
+# def unique_foods_creator():
+#     # file_1 = read_file('example_urls.txt')
+#     # file_2 = read_file('example_urls.txt')
+#     foods = read_file(CORRECTED_FOODS)
+
+#     unique_foods = {}
+#     for food in foods:
+#         unique_foods[food] = 0
+
+#     for food in unique_foods:
+#         with open('unique_foods.txt', 'a') as file:
+#             file.write(f'{food}\n')
+
+
 if __name__ == '__main__':
+    # unique_foods_creator()
     main()
