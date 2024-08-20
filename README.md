@@ -1,4 +1,4 @@
-# Food Table Reader Project
+# Food Analyzer Project
 
 ## Overview
 
