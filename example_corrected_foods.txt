@@ -1,0 +1,188 @@
+Peppers, bell, green, raw
+Peppers, bell, orange, raw
+Peppers, bell, red, raw
+Peppers, bell, yellow, raw
+Onions, red, raw
+Onions, white, raw
+Onions, yellow, raw
+Onion rings, breaded, par fried, frozen, prepared, heated in oven
+Garlic, raw
+Carrots, baby, raw
+Carrots, frozen, unprepared
+Carrots, mature, raw
+Celery, raw
+Tomato, roma
+Tomato, puree, canned
+Tomatoes, crushed, canned
+Tomatoes, grape, raw
+Tomato, sauce, canned, with salt added
+Tomatoes, canned, red, ripe, diced
+Tomato, paste, canned, without salt added
+Tomatoes, whole, canned, solids and liquids, with salt added
+Tomato juice, with added ingredients, from concentrate, shelf stable
+Oil, olive, extra light
+Oil, olive, extra virgin
+Olives, green, Manzanilla, stuffed with pimiento
+Cabbage, green, raw
+Cabbage, red, raw
+Cabbage, bok choy, raw
+Broccoli, raw
+Eggplant, raw
+Butter, stick, salted
+Salt, table, iodized
+Nuts, almonds, dry roasted, with salt added
+Kale, frozen, cooked, boiled, drained, without salt
+Seeds, sunflower seed kernels, dry roasted, with salt added
+Nuts, cashew nuts, raw
+Nuts, macadamia nuts, raw
+Nuts, pine nuts, raw
+Nuts, pistachio nuts, raw
+Nuts, brazilnuts, raw
+Nuts, almonds, whole, raw
+Nuts, hazelnuts or filberts, raw
+Nuts, pecans, halves, raw
+Nuts, walnuts, English, halves, raw
+Almond butter, creamy
+Flaxseed, ground
+Flour, almond
+Flour, chestnut
+Flour, coconut
+Seeds, pumpkin seeds (pepitas), raw
+Seeds, sunflower seed, kernel, raw
+Sesame butter, creamy
+Almond milk, unsweetened, plain, refrigerated
+Almond milk, unsweetened, plain, shelf stable
+Lentils, dry
+Chickpeas, (garbanzo beans, bengal gram), dry
+Chickpeas (garbanzo beans, bengal gram), canned, sodium added, drained and rinsed
+Beans, cannellini, dry
+Beans, snap, green, raw
+Beans, black, canned, sodium added, drained and rinsed
+Beans, cannellini, canned, sodium added, drained and rinsed
+Beans, navy, canned, sodium added, drained and rinsed
+Beans, pinto, canned, sodium added, drained and rinsed
+Restaurant, Latino, pupusas con frijoles (pupusas, bean)
+Beans, great northern, canned, sodium added, drained and rinsed
+Beans, snap, green, canned, regular pack, drained solids
+Beans, kidney, dark red, canned, sodium added, sugar added, drained and rinsed
+Beans, kidney, light red, canned, sodium added, sugar added, drained and rinsed
+Blackeye pea, dry
+Blackeye pea, canned, sodium added, drained and rinsed
+Peas, green, sweet, canned, sodium added, sugar added, drained and rinsed
+Flour, oat, whole grain
+Oat milk, unsweetened, plain, refrigerated
+Oats, whole grain, steel cut
+Oats, whole grain, rolled, old fashioned
+Flour, potato
+Potatoes, gold, without skin, raw
+Potatoes, red, without skin, raw
+Potatoes, russet, without skin, raw
+Sweet potatoes, orange flesh, without skin, raw
+Cucumber, with peel, raw
+Pickles, cucumber, dill or kosher dill
+Fish, salmon, Atlantic, farm raised, raw
+Fish, salmon, sockeye, wild caught, raw
+Bananas, overripe, raw
+Bananas, ripe and slightly ripe, raw
+Grapes, green, seedless, raw
+Grapes, red, seedless, raw
+Grape juice, purple, with added vitamin C, from concentrate, shelf stable
+Grape juice, white, with added vitamin C, from concentrate, shelf stable
+Pears, raw, bartlett
+Apples, fuji, with skin, raw
+Apples, gala, with skin, raw
+Apples, honeycrisp, with skin, raw
+Apples, granny smith, with skin, raw
+Apples, red delicious, with skin, raw
+Apple juice, with added vitamin C, from concentrate, shelf stable
+Oranges, raw, navels
+Orange juice, no pulp, not fortified, from concentrate, refrigerated
+Orange juice, no pulp, not fortified, not from concentrate, refrigerated
+Orange juice, no pulp, not fortified, not from concentrate, refrigerated
+Orange juice, no pulp, not fortified, from concentrate, refrigerated
+Blueberries, raw
+Raspberries, raw
+Peaches, yellow, raw
+Flour, barley
+Flour, quinoa
+Spinach, baby
+Spinach, mature
+Lettuce, iceberg, raw
+Lettuce, cos or romaine, raw
+Lettuce, leaf, green, raw
+Lettuce, leaf, red, raw
+Lettuce, romaine, green, raw
+Mushroom, beech
+Mushroom, crimini
+Mushroom, enoki
+Mushroom, maitake
+Mushroom, oyster
+Mushroom, king oyster
+Mushroom, pioppini
+Mushroom, portabella
+Mushrooms, shiitake
+Mushroom, king oyster
+Mushroom, lion's mane
+Mushrooms, white button
+Cauliflower, raw
+Squash, summer, green, zucchini, includes skin, raw
+Oil, corn
+Flour, corn, yellow, fine meal, enriched
+Brussels sprouts, raw
+Kale, raw
+Squash, winter, acorn, raw
+Squash, winter, butternut, raw
+Squash, summer, yellow, includes skin, raw
+Flour, cassava
+Peanut butter, creamy
+Yogurt, plain, nonfat
+Yogurt, Greek, plain, nonfat
+Yogurt, Greek, plain, nonfat
+Yogurt, Greek, strawberry, nonfat
+Yogurt, plain, whole milk
+Yogurt, Greek, plain, whole milk
+Yogurt, Greek, plain, whole milk
+Cottage cheese, full fat, large or small curd
+Cream cheese, full fat, block
+Cheese, ricotta, whole milk
+Cheese, parmesan, grated
+Cheese, parmesan, grated, refrigerated
+Cheese, parmesan, grated, refrigerated
+Cheese, cheddar
+Cheese, swiss
+Cheese, mozzarella, low moisture, part-skim
+Cheese, feta, whole milk, crumbled
+Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)
+Soy milk, sweetened, plain, refrigerated
+Soy milk, unsweetened, plain, shelf stable
+Cream, heavy
+Cream, sour, full fat
+Butter, stick, unsalted
+Oil, canola
+Oil, sunflower
+Oil, coconut
+Frankfurter, beef, unheated
+Beef, chuck, roast, boneless, choice, raw
+Beef, flank, steak, boneless, choice, raw
+Beef, ribeye, steak, boneless, choice, raw
+Beef, round, top round, boneless, choice, raw
+Sausage, breakfast sausage, beef, pre-cooked, unprepared
+Pork, ground, raw
+Pork, loin, boneless, raw
+Pork, loin, tenderloin, boneless, raw
+Restaurant, Latino, tamale, pork
+Pork, cured, bacon, cooked, restaurant
+Pork, loin, tenderloin, boneless, raw
+Restaurant, Chinese, sweet and sour pork
+Sausage, Italian, pork, mild, cooked, pan-fried
+Sausage, pork, chorizo, link or ground, cooked, pan-fried
+Ham, sliced, restaurant
+Chicken, ground, with additives, raw
+Chicken, breast, boneless, skinless, raw
+Chicken, thigh, boneless, skinless, raw
+Chicken, broilers or fryers, drumstick, meat only, cooked, braised
+Chicken, broiler or fryers, breast, skinless, boneless, meat only, cooked, braised
+Sausage, turkey, breakfast links, mild, raw
+Fish, tuna, light, canned in water, drained solids
+Crustaceans, shrimp, farm raised, raw
+Crustaceans, crab, blue swimming, lump, pasteurized, refrigerated
