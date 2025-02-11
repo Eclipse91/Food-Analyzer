@@ -1,11 +1,10 @@
 import os
 import json
 import logging
-from time import sleep
-from datetime import datetime
 import requests
 from dotenv import load_dotenv
 import util
+from create_db import FoodDatabase
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Float, exc, inspect, text, select, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -26,22 +25,6 @@ def convert_to_mg(data):
             value_mg = value * 1000  # Convert g to mg
         else:
             value_mg = value
-        # if '<' in value:
-        #     numeric_value = float(value.replace('<', ''))
-        #     if unit == 'µg':
-        #         value_mg = f'<{numeric_value / 1000}'  # Convert µg to mg
-        #     elif unit == 'g':
-        #         value_mg = f'<{numeric_value * 1000}'  # Convert g to mg
-        #     else:
-        #         value_mg = f'<{numeric_value}'
-        # else:
-        #     numeric_value = float(value)
-        #     if unit == 'µg':
-        #         value_mg = numeric_value / 1000  # Convert µg to mg
-        #     elif unit == 'g':
-        #         value_mg = numeric_value * 1000  # Convert g to mg
-        #     else:
-        #         value_mg = numeric_value
         processed_data.append([mineral, value_mg])
     
     return processed_data
@@ -79,7 +62,7 @@ def save_to_db(df, table_name, db_path='sqlite:///food_components.db'):
     initial_columns = [Column('Food', String, primary_key=True)]
     for col in df.columns:
         if col != 'Food':
-            initial_columns.append(Column(col, String))
+            initial_columns.append(Column(col, Float))
 
     logging.info('Initial columns for table')
 
@@ -112,7 +95,7 @@ def save_to_db(df, table_name, db_path='sqlite:///food_components.db'):
             # Add new columns if any
             if new_columns:
                 for column in new_columns:
-                    alter_stmt = text(f'ALTER TABLE {table_name} ADD COLUMN "{column.name}" {column.type}')
+                    alter_stmt = text(f'ALTER TABLE {table_name} ADD COLUMN "{column.name}" FLOAT')
                     try:
                         connection.execute(alter_stmt)
                         logging.info(f'Added column {column.name} to table {table_name}')
@@ -177,208 +160,6 @@ def save_to_csv(data, file_path):
     else:
         # If the file does not exist, create it and write the header
         data.to_csv(file_path, mode='w', header=True, index=False)
-
-# def extract_table_data(driver, url, folder_name):
-#     '''
-#     Extract the data from the tables using Selenium and organize them into 
-#     specific DataFrames in order to create .csv and .db files.
-#     '''
-#     try:
-#         # Navigate to the URL
-#         driver.get(url)
-
-#         # Wait for the table header to be present
-#         wait = WebDriverWait(driver, 10)
-#         wait.until(EC.presence_of_element_located((By.XPATH, '//thead//th')))
-
-#         # Path of the file
-#         food = driver.find_element(By.ID, 'foodDetailsDescription').text
-
-#         # Locate the table header
-#         headers = driver.find_elements(By.XPATH, '//thead//th')
-
-#         # Extract the headers (only first 3 headers)
-#         header_list = [header.text.strip() for header in headers[:3]]
-
-#         # Locate the table rows
-#         rows = driver.find_elements(By.XPATH, '//tbody//tr')
-
-#         proximates = []
-#         carbohydrates = []
-#         minerals = []
-#         vitamins = []
-#         lipids = []
-#         amino_acids = []
-#         phytosterols = []
-#         organic_acids = []
-#         isoflavones = []
-#         oligosaccharides = []
-        
-#         # Extract the data from the rows
-#         table_data = []
-#         full_table_data = []
-#         for row in rows:
-#             cells = row.find_elements(By.XPATH, './/td')
-#             cell_data = [cell.text.strip() for cell in cells[:3]]  # Only take the first 3 cells
-#             'https://fdc.nal.usda.gov/fdc-app.html#/food-details/2262074/nutrients'
-#             # If the number of cells is less than 3, pad with None
-#             if len(cell_data) < 3:
-#                 cell_data.extend([None] * (3 - len(cell_data)))
-#             if cell_data != [None, None, None] and cell_data != ['','','']:
-#                 full_table_data.append(cell_data)
-#                 table_data.append(cell_data)
-#                 match table_data[0][0]:
-#                     case 'Proximates:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             proximates.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Carbohydrates:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             carbohydrates.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Minerals:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             minerals.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Vitamins and Other Components:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             if '' in cell_data:
-#                                 continue
-#                             vitamins.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Lipids:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             lipids.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Amino acids:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             amino_acids.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Phytosterols:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             phytosterols.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Organic acids:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             organic_acids.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Isoflavones:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             isoflavones.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)
-#                     case 'Oligosaccharides:':
-#                         if cell_data[0] not in ['Proximates:', 'Carbohydrates:', 'Minerals:', 'Vitamins and Other Components:', 'Lipids:', 'Amino acids:', 'Phytosterols:', 'Organic acids:', 'Isoflavones:', 'Oligosaccharides:']:
-#                             oligosaccharides.append(cell_data)
-#                         else:
-#                             table_data = []
-#                             table_data.append(cell_data)                     
-
-#         if proximates:
-#             proximates = convert_to_mg(proximates)
-#             proximates.insert(0, ['Food', food])
-#             proximates_dict = list_to_dict(proximates)
-#             dfproximates = pd.DataFrame([proximates_dict])
-#             save_to_db(dfproximates, 'proximates', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfproximates, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if carbohydrates:
-#             carbohydrates = convert_to_mg(carbohydrates)
-#             carbohydrates.insert(0, ['Food', food])
-#             carbohydrates = list_to_dict(carbohydrates)
-#             dfcarbohydrates = pd.DataFrame([carbohydrates])
-#             save_to_db(dfcarbohydrates, 'carbohydrates', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfcarbohydrates, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if minerals:
-#             minerals = convert_to_mg(minerals)
-#             minerals.insert(0, ['Food', food])
-#             minerals = list_to_dict(minerals)
-#             dfminerals = pd.DataFrame([minerals])
-#             save_to_db(dfminerals, 'minerals', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfminerals, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if vitamins:
-#             vitamins = convert_to_mg(vitamins)
-#             vitamins.insert(0, ['Food', food])
-#             vitamins = list_to_dict(vitamins)
-#             dfvitamins = pd.DataFrame([vitamins])
-#             save_to_db(dfvitamins, 'vitamins', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfvitamins, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if lipids:
-#             lipids = convert_to_mg(lipids)
-#             lipids.insert(0, ['Food', food])
-#             lipids = list_to_dict(lipids)
-#             dflipids = pd.DataFrame([lipids])
-#             save_to_db(dflipids, 'lipids', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dflipids, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if amino_acids:
-#             amino_acids = convert_to_mg(amino_acids)
-#             amino_acids.insert(0, ['Food', food])
-#             amino_acids = list_to_dict(amino_acids)
-#             dfamino_acids = pd.DataFrame([amino_acids])
-#             save_to_db(dfamino_acids, 'amino_acids', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfamino_acids, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if phytosterols:
-#             phytosterols = convert_to_mg(phytosterols)
-#             phytosterols.insert(0, ['Food', food])
-#             phytosterols = list_to_dict(phytosterols)
-#             dfphytosterols = pd.DataFrame([phytosterols])
-#             save_to_db(dfphytosterols, 'phytosterols', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfphytosterols, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if organic_acids:
-#             organic_acids = convert_to_mg(organic_acids)
-#             organic_acids.insert(0, ['Food', food])
-#             organic_acids = list_to_dict(organic_acids)
-#             dforganic_acids = pd.DataFrame([organic_acids])
-#             save_to_db(dforganic_acids, 'organic_acids', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dforganic_acids, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if isoflavones:
-#             isoflavones = convert_to_mg(isoflavones)
-#             isoflavones.insert(0, ['Food', food])
-#             isoflavones = list_to_dict(isoflavones)
-#             dfisoflavones = pd.DataFrame([isoflavones])
-#             save_to_db(dfisoflavones, 'isoflavones', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfisoflavones, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         if oligosaccharides:
-#             oligosaccharides = convert_to_mg(oligosaccharides)
-#             oligosaccharides.insert(0, ['Food', food])
-#             oligosaccharides = list_to_dict(oligosaccharides)
-#             dfoligosaccharides = pd.DataFrame([oligosaccharides])
-#             save_to_db(dfoligosaccharides, 'oligosaccharides', 'sqlite:///' + folder_name + '/food_components_' + folder_name.split('/')[-1] + '.db')
-#             save_to_csv(dfoligosaccharides, folder_name + '/food_components_' + folder_name.split('/')[-1] + '.csv')
-
-#         df = pd.DataFrame(full_table_data, columns=header_list)
-#         logging.info('Completed Extraction')
-
-#     except Exception as e:
-#         logging.error(f'An error occurred with "{food}": {e}')
-#         df = pd.DataFrame()  # Return an empty DataFrame on error
-
-#     return df, food + '.csv'
 
 def reduce_json(original_json):
     # Extract the description
@@ -540,15 +321,22 @@ def save_data(food_data, food_item):
 
 @util.execution_time
 def main():
-    logging.info('Program started')
-
     # Configure
-    util.log_configurator()
+    # Configure and initialize the logger file
+    log_file = util.log_configurator()
+    logging.info(f'Logger configured: {log_file}')
+    
     util.jsons_configurator()
     util.csvs_configurator()
 
+    logging.info('Program started')
+
     # # Configure the folder where to put the results
     # results_folder = util.results_configurator()
+
+    # Create instance of the class and run the process
+    food_db = FoodDatabase()
+    food_db.run()
 
     # Load environment variables from .env file
     load_dotenv()
@@ -586,38 +374,6 @@ def main():
         save_data(food_data, food)
 
     logging.info('Program ended successfully')
-
-
-
-    # if isinstance(food_data, dict):  # Ensure the response is a dictionary
-    #     write_to_json(food_data, './jsons/' + food_item + '.json')
-    #     print(f"Nutritional data for {food_item} has been written to 'nutrition_data.json'.")
-    # else:
-    #     print(food_data)
-
-    # i = 0
-    # while True:
-    #     i += 1
-    #     get_food_list(API_KEY, i, 100)
-
-    # Call page of foods
-    # food_list = get_food_list(API_KEY, page_number=1, page_size=200)
-    # print("Sample food items you can query:")
-    # for i, food in enumerate(food_list):
-    #     print(f"{i}. {food}")
-
-# def unique_foods_creator():
-#     # file_1 = read_file('example_urls.txt')
-#     # file_2 = read_file('example_urls.txt')
-#     foods = read_file(CORRECTED_FOODS)
-
-#     unique_foods = {}
-#     for food in foods:
-#         unique_foods[food] = 0
-
-#     for food in unique_foods:
-#         with open('unique_foods.txt', 'a') as file:
-#             file.write(f'{food}\n')
 
 
 if __name__ == '__main__':

@@ -36,18 +36,18 @@ def log_configurator() -> str:
     '''
     Configure and initialize the logger.
     '''
-    log_directory = './logs/'
+    log_directory = os.path.join('.', 'logs')
     os.makedirs(log_directory, exist_ok=True)
-    current_datetime = datetime.now()
+    
+    current_datetime = datetime.now().strftime('%Y%m%d_%H%M%S')
     current_file_name = os.path.splitext(os.path.basename(__file__))[0]
-    formatted_datetime = current_datetime.strftime('%Y%m%d_%H%M%S')
-    log_file = f'{log_directory}{current_file_name}_{formatted_datetime}.log'
+    log_file = os.path.join(log_directory, f'{current_file_name}_{current_datetime}.log')
 
     logging.basicConfig(
         filename=log_file, 
         level=logging.INFO, 
         format='%(asctime)s - %(levelname)s - %(message)s'
-        )
+    )
     
     logging.info('Program started')
 
