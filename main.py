@@ -11,34 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 # Adda list of valid foods. Check example_corrected_foods.txt or directly the USDA Site
-CORRECTED_FOODS = 'example_corrected_foods.txt' # 'example_corrected_foods.txt'
-
-def convert_to_mg(data):
-    '''
-    Convert data to mg if necessary.
-    '''
-    processed_data = []
-    for mineral, value, unit in data:
-        if unit == 'µg':
-            value_mg = value / 1000  # Convert µg to mg
-        elif unit == 'g':
-            value_mg = value * 1000  # Convert g to mg
-        else:
-            value_mg = value
-        processed_data.append([mineral, value_mg])
-    
-    return processed_data
-
-def list_to_dict(data):
-    '''
-    Transform a list into a dictionary in order to convert it into a pandas DataFrame.
-    '''
-    food_dict = {}
-    for item in data:
-        key = item[0]
-        value = item[1]
-        food_dict[key] = value
-    return food_dict
+CORRECTED_FOODS = '' # 'example_corrected_foods.txt'
 
 def get_record_count(connection, table):
     '''
@@ -146,6 +119,33 @@ def save_to_db(df, table_name, db_path='sqlite:///food_components.db'):
 
     logging.info(f'Completed save_to_db function of "{table_name}"')
 
+def convert_to_mg(data):
+    '''
+    Convert data to mg if necessary.
+    '''
+    processed_data = []
+    for mineral, value, unit in data:
+        if unit == 'µg':
+            value_mg = value / 1000  # Convert µg to mg
+        elif unit == 'g':
+            value_mg = value * 1000  # Convert g to mg
+        else:
+            value_mg = value
+        processed_data.append([mineral, value_mg])
+    
+    return processed_data
+
+def list_to_dict(data):
+    '''
+    Transform a list into a dictionary in order to convert it into a pandas DataFrame.
+    '''
+    food_dict = {}
+    for item in data:
+        key = item[0]
+        value = item[1]
+        food_dict[key] = value
+    return food_dict
+
 def save_to_csv(data, file_path):
     '''
     Save a DataFrame to food_components.csv.
@@ -162,7 +162,11 @@ def save_to_csv(data, file_path):
         data.to_csv(file_path, mode='w', header=True, index=False)
 
 def reduce_json(original_json):
-    # Extract the description
+    '''
+    Take the information about the food in order to create a JSON 
+    with the name of the food and the values of its nutrients.
+    '''
+    # Extract the name of the food
     reduced_json = {
         "description": original_json.get("description", "")
     }
@@ -180,6 +184,10 @@ def reduce_json(original_json):
     return reduced_json
 
 def json_to_list_of_lists(reduced_json):
+    '''
+    Extracts information about food and creates a JSON object 
+    containing the food's name and its nutrient values.
+    '''
     # Start with the 'Food' and description
     result = [["Food", reduced_json.get("description", "")]]
 
@@ -193,6 +201,49 @@ def json_to_list_of_lists(reduced_json):
         result.append(nutrient_list)
 
     return result
+    
+def read_file(file_path):
+    '''
+    Read the files with the foods or URLs and return their content as a list.
+    '''
+    with open(file_path, 'r') as file:
+        variables = [line.strip() for line in file.readlines()]
+
+    return variables    
+
+def write_to_json(data, filename):
+    '''
+    Writes the given data to a JSON file.
+    '''
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
+def get_food_list(API_KEY, page_number, page_size):
+    '''
+    Retrieves a list of foods from the USDA FoodData Central database.
+    This function sends a GET request to the USDA FoodData Central API
+    using the /foods/list endpoint. It returns a paginated list of food items 
+    along with their descriptions and FDC IDs.
+    '''
+    search_url = 'https://api.nal.usda.gov/fdc/v1/foods/list'
+    params = {
+        'api_key': API_KEY,
+        'pageNumber': page_number,
+        'pageSize': page_size,
+    }
+    
+    response = requests.get(search_url, params=params) # + API_KEY + '&page_size=49')
+    
+    if response.status_code == 200:
+        try:
+            food_data = response.json()
+            return food_data
+        except Exception as e:
+            logging.error(f"Data Error: {e}")
+    else:
+        logging.error(f"Error, status code: {response.status_code}")
+    
+    return []
 
 def search_single_food_usda(query, API_KEY):
     '''
@@ -219,47 +270,6 @@ def search_single_food_usda(query, API_KEY):
             return 'No results found.'
     else:
         return f"Error: {response.status_code}"
-    
-def read_file(file_path):
-    '''
-    Read the files with the foods or URLs and return their content as a list.
-    '''
-    with open(file_path, 'r') as file:
-        variables = [line.strip() for line in file.readlines()]
-
-    return variables    
-
-def write_to_json(data, filename):
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-
-def get_food_list(API_KEY, page_number, page_size):
-    '''
-    Retrieves a list of foods from the USDA FoodData Central database.
-    This function sends a GET request to the USDA FoodData Central API
-    using the /foods/list endpoint. It returns a paginated list of food items 
-    along with their descriptions and FDC IDs.
-    '''
-    list_url = 'https://api.nal.usda.gov/fdc/v1/foods/list'
-    
-    params = {
-        'api_key': API_KEY,
-        'pageNumber': page_number,
-        'pageSize': page_size,
-    }
-    
-    response = requests.get(list_url, params=params) # + API_KEY + '&page_size=49')
-    
-    if response.status_code == 200:
-        try:
-            food_data = response.json()
-            return food_data
-        except Exception as e:
-            logging.error(f"Data Error: {e}")
-    else:
-        logging.error(f"Error, status code: {response.status_code}")
-    
-    return []
 
 def search_all_foods_usda(query, API_KEY):
     '''
@@ -303,6 +313,10 @@ def search_all_foods_usda(query, API_KEY):
         return 'No results found.'
 
 def save_data(food_data, food_item):
+    '''
+    Processes food data, saves it in multiple formats (JSON, CSV, and a database),
+    and logs the operation.
+    '''
     food_data = reduce_json(food_data)
     food_data = json_to_list_of_lists(food_data)
     food_data = convert_to_mg(food_data[1:])
@@ -362,14 +376,13 @@ def main():
                 logging.error(f'Food not found: {food}')
                 logging.error(f'Food not found: {results}')
 
-        with open('example_corrected_foods.txt', 'a') as file:
+        with open('corrected_foods.txt', 'a') as file:
             for food in corrected_foods:
                 file.write(f"{food}\n")
     else:
         foods = read_file(CORRECTED_FOODS)
 
     for food in foods:
-        # food = 'Fish, salmon, chinook, raw'
         food_data = search_single_food_usda(food, API_KEY)
         save_data(food_data, food)
 

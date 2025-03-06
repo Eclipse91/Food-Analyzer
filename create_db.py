@@ -216,6 +216,7 @@ class FoodDatabase:
         self.define_table()
         self.create_table()
 
-# Create instance of the class and run the process
-food_db = FoodDatabase()
-food_db.run()
+if __name__ == '__main__':
+    # Create instance of the class and run the process
+    food_db = FoodDatabase()
+    food_db.run()
